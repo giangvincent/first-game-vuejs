@@ -1,9 +1,9 @@
 <html>
 
 <head>
-    <!-- Compressed CSS -->
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <!-- Compressed CSS -->
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 
 <body>
@@ -15,8 +15,14 @@
                     Player health
                 </div>
                 <div class="progress">
+
                     <div class="progress-bar progress-bar-danger" role="progressbar" v-bind:aria-valuenow="player_health" aria-valuemin="0" aria-valuemax="100" v-bind:style="{ width: player_health + '%' }">
-                        {{ player_health }}%
+                        <span class="sr-only">Player health {{ player_health }}%</span>
+                    </div>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-warning" role="progressbar" v-bind:aria-valuenow="player_energy" aria-valuemin="0" aria-valuemax="100" v-bind:style="{ width: player_energy + '%' }">
+                        <span class="sr-only">Player energy{{ player_energy }}%</span>
                     </div>
                 </div>
                 <!-- <input v-model="player_health"> -->
@@ -27,7 +33,12 @@
                 </div>
                 <div class="progress">
                     <div class="progress-bar progress-bar-success" role="progressbar" v-bind:aria-valuenow="monster_health" aria-valuemin="0" aria-valuemax="100" v-bind:style="{ width: monster_health + '%' }">
-                        {{ monster_health }}%
+                        <span class="sr-only">Monster health {{ monster_health }}%</span>
+                    </div>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-warning" role="progressbar" v-bind:aria-valuenow="monster_energy" aria-valuemin="0" aria-valuemax="100" v-bind:style="{ width: monster_energy + '%' }">
+                        <span class="sr-only">Monster energy {{ monster_energy }}%</span>
                     </div>
                 </div>
                 <!-- <input v-model="monster_health"> -->
@@ -35,70 +46,159 @@
         </div>
 
         <div class="well text-center" v-show="!init_game">
-            <button class="btn btn-success" v-on:click="init">Start game</button>
-        </div>
-        
-        <div class="well text-center" v-show="init_game">
-            <button class="btn btn-primary" v-on:click="attack">Attack</button>
-            <button class="btn btn-warning" v-on:click="heavy_attack">Heavy attack</button>
-            <button class="btn btn-danger" v-on:click="heal">Heal</button>
-            <button class="btn btn-info" v-on:click="defence">Defence</button>
-            <button class="btn btn-default" v-on:click="stop_game">Stop game</button>
+            <button class="btn btn-success" v-on:click="init(1)">Start game</button>
         </div>
 
-        <div class="well text-center" style="max-height: 500px; overflow-y: scroll;" id="status_game" v-show="init_game" >
+        <div class="well text-center" v-show="init_game">
+            <button class="btn btn-primary" v-on:click="attack('player')">Attack</button>
+            <button class="btn btn-warning" v-on:click="attack('player' , 'heavy')">Heavy attack</button>
+            <button class="btn btn-danger" v-on:click="heal('player')">Heal</button>
+            <button class="btn btn-info" v-on:click="defence('player')">Defence</button>
+            <button class="btn btn-default" v-on:click="init(0)">Stop game</button>
+        </div>
+
+        <div class="well text-center" style="max-height: 300px; overflow-y: scroll;" id="status_game">
             <!-- result when player click a button -->
             <div v-for="message in messages">
                 <div class="alert" v-bind:class="[message.class]" role="alert">{{ message.content }}</div>
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+    <script
+    src="https://code.jquery.com/jquery-2.2.4.min.js"
+    integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
     crossorigin="anonymous"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
     <script>
-        var alwaysBottom = function () {
-            $('#status_game').animate({scrollTop: $('#status_game').attr('scrollHeight')});
-        }
-        var app = new Vue({
-            el: '#game',
-            data: {
-                player_health: 0,
-                monster_health: 0,
-                init_game: false,
-                messages: [
-                    {content: 'Game started', class: 'alert-primary'}
-                ]
-            }, 
-            methods: {
-                init: function () {
-                    this.player_health = 100;
-                    this.monster_health = 100;
-                    this.init_game = true;
-                },
-                stop_game: function () {
-                    this.player_health = 0;
-                    this.monster_health = 0;
-                    this.init_game = false;
-                },
-                attack: function () {
-                    this.messages.push({content: 'Player attack', class: 'alert-warning'});
-                },
-                heavy_attack: function () {
-                    // body...
-                },
-                heal: function () {
-                    // body...
-                },
-                defence: function () {
-                    // body...
-                }
-            }
-        })
+    var alwaysBottom = function() {
+        $('#status_game').animate({
+            scrollTop: $('#status_game').attr('scrollHeight')
+        });
+    }
+    $(document).on('change', '#status_game', function(event) {
+        event.preventDefault();
+        /* Act on the event */
+        alwaysBottom();
+    });
+    var app = new Vue({
+        el: '#game',
+        data: {
+            player_health: 0,
+            player_energy: 0,
+            player_damage: 0,
+            player_defence: 0,
 
-    </script>
+            monster_health: 0,
+            monster_energy: 0,
+            monster_damage: 0,
+            monster_defence: 0,
+
+            init_game: false,
+            messages: []
+        },
+        methods: {
+            init: function(start) {
+                this.init_game = (start == 1) ? true : false;
+                this.player_health = (this.init_game) ? 100 : 0;
+                this.player_energy = (this.init_game) ? 100 : 0;
+                this.monster_health = (this.init_game) ? 100 : 0;
+                this.monster_energy = (this.init_game) ? 100 : 0;
+                this.messages.push({
+                    content: 'Game started',
+                    class: 'alert-primary'
+                });
+            },
+            
+            attack: function(ob = 'player' , type = 'normal') {
+            
+                var op_object = 'monster';
+                if (ob == 'monster') op_object = 'player';
+                if (type == 'normal') this[ob + '_damage'] = parseInt( Math.floor((Math.random() * 10) + 5) );
+                if (type == 'heavy') this[ob + '_damage'] = parseInt( Math.floor((Math.random() * 10) + 5) );
+                if (ob == 'player') this.rand_action();
+                if (this[ob + '_energy'] <= 0) {return;}
+                var damage_token = this[ob + '_damage'] - this[op_object + '_defence'];
+                //this[ob + '_health'] -= this[op_object + '_damage'];
+                this[op_object + '_health'] -= (damage_token > 0) ? damage_token : 0;
+                this[ob + '_energy'] -= (type == 'heavy') ? 10 : 5;
+                this.messages.push({
+                    content: ob + ' attack ' + this[ob + '_damage'],
+                    class: 'alert-warning'
+                });
+                if (ob == 'player') this[ob + '_defence'] = 0;
+            },
+
+            heal: function(ob = 'player') {
+                if (ob == 'player') this.rand_action();
+                if (this[ob + '_energy'] <= 0) {return;}
+                var op_object = 'monster';
+                if (ob == 'monster') op_object = 'player';
+
+                var heal_ = parseInt( Math.floor((Math.random() * 10) + 5) );
+                this[ob + '_health'] += heal_;
+                this[ob + '_energy'] -= 5;
+                this.messages.push({
+                    content: ob + ' heal ' + heal_,
+                    class: 'alert-danger'
+                });
+            },
+            defence: function(ob = 'player') {
+
+                if (ob == 'player') this.rand_action();
+                if (this[ob + '_energy'] <= 0) {return;}
+                var op_object = 'monster';
+                if (ob == 'monster') op_object = 'player';
+                var damage_token = this[op_object + '_damage'] - parseInt( Math.floor((Math.random() * 10) + 5) );
+                this[ob + '_health'] -= (damage_token > 0) ? damage_token : 0;
+                this[ob + '_energy'] -= 3;
+                this.messages.push({
+                    content: ob + ' defence : -' + damage_token + ' health',
+                    class: 'alert-success'
+                });
+
+            },
+
+            rand_action:  function () {
+                var rand_num = parseInt( Math.floor((Math.random() * 4) + 1) );
+                console.log(rand_num);
+                switch(rand_num){
+                    case 1:
+                    this.attack('monster' , 'normal');
+                    break;
+                    case 2:
+                    this.attack('monster' , 'heavy');
+                    break;
+                    case 3:
+                    this.heal('monster');
+                    break;
+                    case 4:
+                    this.defence('monster');
+                    break;
+                }
+                if (this.player_health <= 0 || this.monster_health <= 0 || (this.player_energy <= 0 && this.monster_energy <= 0)) {
+                    var result = '';
+                    if (this.player_health < this.monster_health) {
+                        result = 'Monster win. you suck';
+                    } else{
+                        if (this.player_health > this.monster_health) {
+                            result = 'You win. Good job boy.';
+                        } else result = 'Equal. Damm that lucky for you monster';
+                    }
+                    this.init_game = false;
+                    this.messages.push({
+                        content: 'end game : ' + result,
+                        class: 'alert-success'
+                    });
+                }
+
+            }
+
+        }
+    })
+
+</script>
 </body>
 
 </html>
